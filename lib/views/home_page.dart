@@ -50,9 +50,10 @@ class HomePage extends StatelessWidget {
             title: const Text("Weather"),
             leading: const Icon(Icons.cloud_queue_outlined),
             onTap: () => Navigator.restorablePushNamed(context, "/weather")),
-        const ListTile(
-          title: Text("Search"),
-          leading: Icon(Icons.search),
+        ListTile(
+          title: const Text("Search"),
+          leading: const Icon(Icons.search),
+          onTap: () => Navigator.restorablePushNamed(context, "/search"),
         ),
         ListTile(
           title: const Text("Settings"),

@@ -11,9 +11,9 @@ import 'package:project/views/home_page.dart';
 import 'package:project/views/member/member_details.dart';
 import 'package:project/views/settings_view.dart';
 import 'package:project/views/splash_page.dart';
+import 'package:project/views/weather/search_weather.dart';
 import 'package:project/views/weather_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:project/views/weather/search_page.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
             '/member_details': (_) => const MemberItemDetailsView(),
             '/weather': (_) => const WeatherView(),
             '/chat': (_) => const ChatPage(),
+            '/search': (_) => const SearchWeather(),
           },
         );
       },
