@@ -8,7 +8,7 @@ class HomePage extends StatelessWidget {
       {super.key,
       this.members = const [
         MemberItem("ANDRIANJAKA FENOSOA Tiana Nantenaina", "2311",
-            "assets/images/TianaNanta.png"),
+            "assets/images/TianaNanta.jpg"),
         MemberItem("ANDRITOAVINA Aro Iorenantsoa Mykaia", "2284",
             "assets/images/Mykaia.png"),
         MemberItem("RAZAKAMAMPIANINA Hermann Williams", "2314",
