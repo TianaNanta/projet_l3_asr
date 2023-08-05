@@ -9,14 +9,14 @@ class SearchPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Search Page")),
+      appBar: AppBar(title: const Text("Page de recherche")),
       body: Center(
         child: Column(
           children: [
             TextField(
               controller: cityNameController,
               decoration: const InputDecoration(
-                hintText: 'Enter city name',
+                hintText: 'Entrer le nom de la ville',
               ),
             ),
             const SizedBox(height: 10),
@@ -32,7 +32,7 @@ class SearchPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text('Get Weather'),
+              child: const Text('Obtenir la météo'),
             ),
           ],
         ),

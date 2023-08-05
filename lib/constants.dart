@@ -1,21 +1,12 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:weather/weather.dart';
 
 // secret key
 const apiKey = "1bea58f08eeaa87ecdffcc3a6042945b";
-const urlSupabase = "https://cumqtkrcgoflqmgukrbl.supabase.co";
-const anonKey =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1bXF0a3JjZ29mbHFtZ3VrcmJsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk2MTI0ODQsImV4cCI6MjAwNTE4ODQ4NH0.SeJtDB9foTUrJAkX3Yl9qmg4KQ2CKpg9MDLDt0ds-oA";
 
 // weather
 WeatherFactory wf = WeatherFactory(apiKey);
-
-/// Supabase client
-final supabase = Supabase.instance.client;
-// User
-final User? user = supabase.auth.currentUser;
 
 // Firebase Messaging
 final messaging = FirebaseMessaging.instance;
@@ -35,9 +26,6 @@ const formSpacer = SizedBox(width: 16, height: 16);
 
 /// Some padding for all the forms to use
 const formPadding = EdgeInsets.symmetric(vertical: 20, horizontal: 16);
-
-/// Error message to display the user when unexpected error occurs.
-const unexpectedErrorMessage = 'Unexpected error occurred.';
 
 /// Basic theme to change the look and feel of the app
 final appLightTheme = ThemeData.light().copyWith(

@@ -1,19 +1,18 @@
 //import 'package:firebase_core/firebase_core.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 //import 'package:flutter/foundation.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/constants.dart';
 import 'package:project/controllers/settings_controller.dart';
-import 'package:project/views/account/account_page.dart';
+import 'package:project/firebase_options.dart';
 import 'package:project/views/account/login_page.dart';
 import 'package:project/views/chat_page.dart';
 import 'package:project/views/home_page.dart';
 import 'package:project/views/member/member_details.dart';
 import 'package:project/views/search_page.dart';
 import 'package:project/views/settings_view.dart';
-import 'package:project/views/splash_page.dart';
 import 'package:project/views/weather_view.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -45,9 +44,7 @@ class MyApp extends StatelessWidget {
           themeMode: settingsController.themeMode,
           initialRoute: '/',
           routes: <String, WidgetBuilder>{
-            '/': (_) => const SplashPage(),
-            '/login': (_) => const LoginPage(),
-            '/account': (_) => const AccountPage(),
+            '/': (_) => const LoginPage(),
             '/settings': (_) => SettingsView(controller: settingsController),
             '/home': (_) => const HomePage(),
             '/member_details': (_) => const MemberItemDetailsView(),
@@ -70,44 +67,10 @@ Future main() async {
   // This prevents a sudden theme change when the app is first displayed.
   await settingsController.loadSettings();
 
-  // initialize supabase
-
-  WidgetsFlutterBinding.ensureInitialized();
-
-  await Supabase.initialize(
-    url: urlSupabase,
-    anonKey: anonKey,
-    authFlowType: AuthFlowType.pkce,
-  );
-
   // initialize firebase
-/*  await Firebase.initializeApp(
+  await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  NotificationSettings settings = await messaging.requestPermission(
-    alert: true,
-    badge: false,
-    provisional: false,
-    sound: true,
-  );
-
-  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-    if (kDebugMode) {
-      print('User granted permission');
-    }
-    String? token = await messaging.getToken();
-    //if (token != null) {
-    //  await supabase.rpc('update_fcm_key', params: {'key': token});
-    //}
-  } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
-    if (kDebugMode) {
-      print('User granted provisional permission');
-    }
-  } else {
-    if (kDebugMode) {
-      print('User declined or has not accepted permission');
-    }
-  }*/
 
   // Run the app and pass in the SettingsController. The app listens to the
   // SettingsController for changes, then passes it further down to the

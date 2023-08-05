@@ -13,7 +13,7 @@ Widget additionalInformation(
           height: 15.0,
         ),
         const Text(
-          "Additional Information",
+          "Informations additionnelles",
           style: TextStyle(
             fontSize: 25,
             fontWeight: FontWeight.bold,
@@ -37,7 +37,7 @@ Widget additionalInformation(
                   height: icon,
                 ),
                 const Text(
-                  "Humidity",
+                  "Humidité",
                   style: TextStyle(
                     fontSize: size,
                   ),
@@ -65,7 +65,7 @@ Widget additionalInformation(
                   height: icon,
                 ),
                 const Text(
-                  "Wind Speed",
+                  "Vitesse du vent",
                   style: TextStyle(
                     fontSize: size,
                   ),
@@ -93,7 +93,7 @@ Widget additionalInformation(
                   height: icon,
                 ),
                 const Text(
-                  "Pressure",
+                  "Pression",
                   style: TextStyle(
                     fontSize: size,
                   ),

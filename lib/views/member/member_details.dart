@@ -10,10 +10,10 @@ class MemberItemDetailsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Member Details'),
+        title: const Text('Détails des membres'),
       ),
       body: const Center(
-        child: Text('More Information Here'),
+        child: Text('Plus d\'informations ici'),
       ),
     );
   }

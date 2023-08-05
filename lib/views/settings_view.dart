@@ -16,7 +16,7 @@ class SettingsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
+        title: const Text('Paramètres'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -26,7 +26,7 @@ class SettingsView extends StatelessWidget {
         // SettingsController is updated, which rebuilds the MaterialApp.
         child:
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          const Text('Theme', style: TextStyle(fontSize: 18)),
+          const Text('Thème', style: TextStyle(fontSize: 18)),
           DropdownButton<ThemeMode>(
             // Read the selected themeMode from the controller
             value: controller.themeMode,
@@ -35,15 +35,15 @@ class SettingsView extends StatelessWidget {
             items: const [
               DropdownMenuItem(
                 value: ThemeMode.system,
-                child: Text('System Theme'),
+                child: Text('Thème système'),
               ),
               DropdownMenuItem(
                 value: ThemeMode.light,
-                child: Text('Light Theme'),
+                child: Text('Thème clair'),
               ),
               DropdownMenuItem(
                 value: ThemeMode.dark,
-                child: Text('Dark Theme'),
+                child: Text('Thème sombre'),
               )
             ],
           ),

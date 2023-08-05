@@ -27,7 +27,7 @@ class _SearchWeatherState extends State<SearchWeather> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Search Weather"),
+        title: const Text("Recherche de la météo"),
       ),
       body: FutureBuilder(
         future: getWeather(),
@@ -81,16 +81,16 @@ class _SearchWeatherState extends State<SearchWeather> {
           } else {
             return Center(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      "assets/icons/clouds.png",
-                      height: 200,
-                      width: 200,
-                    ),
-                    const CircularProgressIndicator()
-                  ],
-                ));
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  "assets/icons/clouds.png",
+                  height: 200,
+                  width: 200,
+                ),
+                const CircularProgressIndicator()
+              ],
+            ));
           }
         },
       ),

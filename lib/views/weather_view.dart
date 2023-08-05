@@ -20,7 +20,7 @@ class _WeatherViewState extends State<WeatherView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Weather"),
+        title: const Text("Météo"),
       ),
       body: SafeArea(
           child: Obx(() => weatherController.checkLoading().isTrue
