@@ -8,14 +8,11 @@ class HomePage extends StatefulWidget {
   const HomePage(
       {super.key,
       this.members = const [
-        MemberItem("ANDRIANJAKA FENOSOA Tiana Nantenaina", "2311",
-            "assets/images/TianaNanta.jpg"),
-        MemberItem("ANDRITOAVINA Aro Iorenantsoa Mykaia", "2284",
-            "assets/images/Mykaia.png"),
-        MemberItem("RAZAKAMAMPIANINA Hermann Williams", "2314",
-            "assets/images/Hermann.png"),
-        MemberItem(
-            "TSANGASOA Falinirina Adriano", "2297", "assets/images/Adriano.png")
+        MemberItem("ANDRIANJAKA FENOSOA Tiana Nantenaina", "2311", ""),
+        MemberItem("ANDRITOAVINA Aro Iorenantsoa Mykaia", "2284", ""),
+        // MemberItem("RAZAKAMAMPIANINA Hermann Williams", "2314",
+        //     ""),
+        MemberItem("TSANGASOA Falinirina Adriano", "2297", "")
       ]});
 
   final List<MemberItem> members;
@@ -35,7 +32,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal.shade400,
         title: const Text('Projet Android L3 ASR'),
+        elevation: 0,
       ),
       drawer: ChatWidgets.drawer(context),
       body: ListView.builder(
@@ -50,9 +49,10 @@ class _HomePageState extends State<HomePage> {
           return ListTile(
               title: Text(member.name),
               subtitle: Text('Numéro: ${member.matricule}'),
-              leading: CircleAvatar(
+              leading: const CircleAvatar(
                 // Display the Flutter Logo image asset.
-                foregroundImage: AssetImage(member.photoUrl),
+                // foregroundImage: AssetImage(member.photoUrl),
+                child: Icon(Icons.person),
               ),
               onTap: () {
                 // Navigate to the details page. If the user leaves and returns to

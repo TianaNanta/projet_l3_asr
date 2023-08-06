@@ -27,12 +27,11 @@ class _ChatPageState extends State<ChatPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.indigo.shade400,
+      backgroundColor: Colors.teal.shade400,
       appBar: AppBar(
-        backgroundColor: Colors.indigo.shade400,
+        backgroundColor: Colors.teal.shade400,
         title: const Text('Messages'),
         elevation: 0,
-        centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10.0),
@@ -59,7 +58,7 @@ class _ChatPageState extends State<ChatPage> {
                 Container(
                   margin: const EdgeInsets.all(0),
                   child: Container(
-                    color: Colors.indigo.shade400,
+                    color: Colors.teal.shade400,
                     padding: const EdgeInsets.all(8),
                     height: 160,
                     child: Column(
@@ -70,7 +69,7 @@ class _ChatPageState extends State<ChatPage> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 10),
                           child: Text(
-                            'Recent Users',
+                            'Utilisateurs récents',
                             style: Styles.h1(),
                           ),
                         ),
@@ -149,7 +148,7 @@ class _ChatPageState extends State<ChatPage> {
                               horizontal: 20, vertical: 20),
                           child: Text(
                             'Contacts',
-                            style: Styles.h1().copyWith(color: Colors.indigo),
+                            style: Styles.h1().copyWith(color: Colors.teal),
                           ),
                         ),
                         Expanded(

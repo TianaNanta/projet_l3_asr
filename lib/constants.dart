@@ -17,7 +17,7 @@ const preloader = Center(
   mainAxisAlignment: MainAxisAlignment.center,
   children: [
     Image(image: AssetImage('assets/icons/project.png')),
-    CircularProgressIndicator(color: Colors.orange),
+    CircularProgressIndicator(color: Colors.teal),
   ],
 ));
 
@@ -29,7 +29,7 @@ const formPadding = EdgeInsets.symmetric(vertical: 20, horizontal: 16);
 
 /// Basic theme to change the look and feel of the app
 final appLightTheme = ThemeData.light().copyWith(
-  primaryColorDark: Colors.orange,
+  primaryColorDark: Colors.teal,
   appBarTheme: const AppBarTheme(
     elevation: 1,
     backgroundColor: Colors.white,
@@ -39,21 +39,21 @@ final appLightTheme = ThemeData.light().copyWith(
       fontSize: 18,
     ),
   ),
-  primaryColor: Colors.orange,
+  primaryColor: Colors.teal,
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      foregroundColor: Colors.orange,
+      foregroundColor: Colors.teal,
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.orange,
+      backgroundColor: Colors.teal,
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     floatingLabelStyle: const TextStyle(
-      color: Colors.orange,
+      color: Colors.teal,
     ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -62,11 +62,11 @@ final appLightTheme = ThemeData.light().copyWith(
         width: 2,
       ),
     ),
-    focusColor: Colors.orange,
+    focusColor: Colors.teal,
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: const BorderSide(
-        color: Colors.orange,
+        color: Colors.teal,
         width: 2,
       ),
     ),
@@ -74,7 +74,7 @@ final appLightTheme = ThemeData.light().copyWith(
 );
 
 final appDarkTheme = ThemeData.dark().copyWith(
-  primaryColorDark: Colors.orange,
+  primaryColorDark: Colors.teal,
   appBarTheme: const AppBarTheme(
     elevation: 1,
     backgroundColor: Colors.black,
@@ -84,21 +84,21 @@ final appDarkTheme = ThemeData.dark().copyWith(
       fontSize: 18,
     ),
   ),
-  primaryColor: Colors.orange,
+  primaryColor: Colors.teal,
   textButtonTheme: TextButtonThemeData(
     style: TextButton.styleFrom(
-      foregroundColor: Colors.orange,
+      foregroundColor: Colors.teal,
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       foregroundColor: Colors.white,
-      backgroundColor: Colors.orange,
+      backgroundColor: Colors.teal,
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     floatingLabelStyle: const TextStyle(
-      color: Colors.orange,
+      color: Colors.teal,
     ),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -107,11 +107,11 @@ final appDarkTheme = ThemeData.dark().copyWith(
         width: 2,
       ),
     ),
-    focusColor: Colors.orange,
+    focusColor: Colors.teal,
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
       borderSide: const BorderSide(
-        color: Colors.orange,
+        color: Colors.teal,
         width: 2,
       ),
     ),

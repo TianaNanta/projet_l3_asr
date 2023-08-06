@@ -21,6 +21,8 @@ class _WeatherViewState extends State<WeatherView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Météo"),
+        backgroundColor: Colors.teal.shade400,
+        elevation: 0,
       ),
       body: SafeArea(
           child: Obx(() => weatherController.checkLoading().isTrue

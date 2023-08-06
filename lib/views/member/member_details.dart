@@ -11,6 +11,8 @@ class MemberItemDetailsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Détails des membres'),
+        backgroundColor: Colors.teal.shade400,
+        elevation: 0,
       ),
       body: const Center(
         child: Text('Plus d\'informations ici'),

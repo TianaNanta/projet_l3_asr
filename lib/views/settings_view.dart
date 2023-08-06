@@ -17,6 +17,8 @@ class SettingsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Paramètres'),
+        backgroundColor: Colors.teal.shade400,
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
