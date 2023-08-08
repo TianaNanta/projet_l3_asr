@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:project/controllers/account_controller.dart';
-import 'package:project/views/chat/widgets.dart';
 import 'package:project/views/member/member_details.dart';
 import 'package:project/views/member/member_item.dart';
+import 'package:project/views/widget.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage(
@@ -24,7 +23,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   void initState() {
-    Functions.updateAvailability();
     super.initState();
   }
 
@@ -36,7 +34,7 @@ class _HomePageState extends State<HomePage> {
         title: const Text('Projet Android L3 ASR'),
         elevation: 0,
       ),
-      drawer: ChatWidgets.drawer(context),
+      drawer: CustomWidget.drawer(context),
       body: ListView.builder(
         // Providing a restorationId allows the ListView to restore the
         // scroll position when a user leaves and returns to the app after it

@@ -1,184 +1,236 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:project/views/chat/styles.dart';
-import 'package:project/views/chat/widgets.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:mime/mime.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ChatRoom extends StatefulWidget {
-  final String id;
-  final String name;
+  const ChatRoom({
+    super.key,
+    required this.room,
+  });
 
-  const ChatRoom({Key? key, required this.id, required this.name})
-      : super(key: key);
+  final types.Room room;
 
   @override
   State<ChatRoom> createState() => _ChatRoomState();
 }
 
 class _ChatRoomState extends State<ChatRoom> {
-  var roomId;
+  bool _isAttachmentUploading = false;
 
-  @override
-  Widget build(BuildContext context) {
-    final firestore = FirebaseFirestore.instance;
-    return Scaffold(
-      backgroundColor: Colors.teal.shade400,
-      appBar: AppBar(
-        backgroundColor: Colors.teal.shade400,
-        title: Text(widget.name),
-        elevation: 0,
-        actions: [
-          IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(18.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Messages',
-                  style: Styles.h1(),
+  void _handleAttachmentPressed() {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) => SafeArea(
+        child: SizedBox(
+          height: 144,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _handleImageSelection();
+                },
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Photo'),
                 ),
-                const Spacer(),
-                StreamBuilder(
-                    stream: firestore
-                        .collection('Users')
-                        .doc(widget.id)
-                        .snapshots(),
-                    builder: (context,
-                        AsyncSnapshot<DocumentSnapshot<Map<String, dynamic>>>
-                            snapshot) {
-                      return !snapshot.hasData
-                          ? Container()
-                          : Text(
-                              'Dernier vu : ${DateFormat('hh:mm a').format(snapshot.data!['date_time'].toDate())}',
-                              style: Styles.h1().copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.normal,
-                                  color: Colors.white70),
-                            );
-                    }),
-                const Spacer(),
-                const SizedBox(
-                  width: 50,
-                )
-              ],
-            ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  _handleFileSelection();
+                },
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Fichier'),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text('Annuler'),
+                ),
+              ),
+            ],
           ),
-          Expanded(
-            child: Container(
-              decoration: Styles.friendsBox(),
-              child: StreamBuilder(
-                  stream: firestore.collection('Rooms').snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      if (snapshot.data!.docs.isNotEmpty) {
-                        List<QueryDocumentSnapshot?> allData = snapshot
-                            .data!.docs
-                            .where((element) =>
-                                element['users'].contains(widget.id) &&
-                                element['users'].contains(
-                                    FirebaseAuth.instance.currentUser!.uid))
-                            .toList();
-                        QueryDocumentSnapshot? data =
-                            allData.isNotEmpty ? allData.first : null;
-                        if (data != null) {
-                          roomId = data.id;
-                        }
-                        return data == null
-                            ? Container()
-                            : StreamBuilder(
-                                stream: data.reference
-                                    .collection('messages')
-                                    .orderBy('datetime', descending: true)
-                                    .snapshots(),
-                                builder: (context,
-                                    AsyncSnapshot<QuerySnapshot> snap) {
-                                  return !snap.hasData
-                                      ? Container()
-                                      : ListView.builder(
-                                          itemCount: snap.data!.docs.length,
-                                          reverse: true,
-                                          itemBuilder: (context, i) {
-                                            return ChatWidgets.messagesCard(
-                                                snap.data!.docs[i]['sent_by'] ==
-                                                    FirebaseAuth.instance
-                                                        .currentUser!.uid,
-                                                snap.data!.docs[i]['message'],
-                                                DateFormat('hh:mm a').format(
-                                                    snap.data!
-                                                        .docs[i]['datetime']
-                                                        .toDate()));
-                                          },
-                                        );
-                                });
-                      } else {
-                        return Center(
-                          child: Text(
-                            'Aucune conversation trouvé',
-                            style: Styles.h1()
-                                .copyWith(color: Colors.teal.shade400),
-                          ),
-                        );
-                      }
-                    } else {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          color: Colors.teal,
-                        ),
-                      );
-                    }
-                  }),
-            ),
-          ),
-          Container(
-            color: Colors.white,
-            child: ChatWidgets.messageField(onSubmit: (controller) {
-              if (controller.text.toString() != '') {
-                if (roomId != null) {
-                  Map<String, dynamic> data = {
-                    'message': controller.text.trim(),
-                    'sent_by': FirebaseAuth.instance.currentUser!.uid,
-                    'datetime': DateTime.now(),
-                  };
-                  firestore.collection('Rooms').doc(roomId).update({
-                    'last_message_time': DateTime.now(),
-                    'last_message': controller.text,
-                  });
-                  firestore
-                      .collection('Rooms')
-                      .doc(roomId)
-                      .collection('messages')
-                      .add(data);
-                } else {
-                  Map<String, dynamic> data = {
-                    'message': controller.text.trim(),
-                    'sent_by': FirebaseAuth.instance.currentUser!.uid,
-                    'datetime': DateTime.now(),
-                  };
-                  firestore.collection('Rooms').add({
-                    'users': [
-                      widget.id,
-                      FirebaseAuth.instance.currentUser!.uid,
-                    ],
-                    'last_message': controller.text,
-                    'last_message_time': DateTime.now(),
-                  }).then((value) async {
-                    value.collection('messages').add(data);
-                  });
-                }
-              }
-              controller.clear();
-            }),
-          )
-        ],
+        ),
       ),
     );
   }
+
+  void _handleFileSelection() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.any,
+    );
+
+    if (result != null && result.files.single.path != null) {
+      _setAttachmentUploading(true);
+      final name = result.files.single.name;
+      final filePath = result.files.single.path!;
+      final file = File(filePath);
+
+      try {
+        final reference = FirebaseStorage.instance.ref(name);
+        await reference.putFile(file);
+        final uri = await reference.getDownloadURL();
+
+        final message = types.PartialFile(
+          mimeType: lookupMimeType(filePath),
+          name: name,
+          size: result.files.single.size,
+          uri: uri,
+        );
+
+        FirebaseChatCore.instance.sendMessage(message, widget.room.id);
+        _setAttachmentUploading(false);
+      } finally {
+        _setAttachmentUploading(false);
+      }
+    }
+  }
+
+  void _handleImageSelection() async {
+    final result = await ImagePicker().pickImage(
+      imageQuality: 70,
+      maxWidth: 1440,
+      source: ImageSource.gallery,
+    );
+
+    if (result != null) {
+      _setAttachmentUploading(true);
+      final file = File(result.path);
+      final size = file.lengthSync();
+      final bytes = await result.readAsBytes();
+      final image = await decodeImageFromList(bytes);
+      final name = result.name;
+
+      try {
+        final reference = FirebaseStorage.instance.ref(name);
+        await reference.putFile(file);
+        final uri = await reference.getDownloadURL();
+
+        final message = types.PartialImage(
+          height: image.height.toDouble(),
+          name: name,
+          size: size,
+          uri: uri,
+          width: image.width.toDouble(),
+        );
+
+        FirebaseChatCore.instance.sendMessage(
+          message,
+          widget.room.id,
+        );
+        _setAttachmentUploading(false);
+      } finally {
+        _setAttachmentUploading(false);
+      }
+    }
+  }
+
+  void _handleMessageTap(BuildContext _, types.Message message) async {
+    if (message is types.FileMessage) {
+      var localPath = message.uri;
+
+      if (message.uri.startsWith('http')) {
+        try {
+          final updatedMessage = message.copyWith(isLoading: true);
+          FirebaseChatCore.instance.updateMessage(
+            updatedMessage,
+            widget.room.id,
+          );
+
+          final client = http.Client();
+          final request = await client.get(Uri.parse(message.uri));
+          final bytes = request.bodyBytes;
+          final documentsDir = (await getApplicationDocumentsDirectory()).path;
+          localPath = '$documentsDir/${message.name}';
+
+          if (!File(localPath).existsSync()) {
+            final file = File(localPath);
+            await file.writeAsBytes(bytes);
+          }
+        } finally {
+          final updatedMessage = message.copyWith(isLoading: false);
+          FirebaseChatCore.instance.updateMessage(
+            updatedMessage,
+            widget.room.id,
+          );
+        }
+      }
+
+      await OpenFilex.open(localPath);
+    }
+  }
+
+  void _handlePreviewDataFetched(
+    types.TextMessage message,
+    types.PreviewData previewData,
+  ) {
+    final updatedMessage = message.copyWith(previewData: previewData);
+
+    FirebaseChatCore.instance.updateMessage(updatedMessage, widget.room.id);
+  }
+
+  void _handleSendPressed(types.PartialText message) {
+    FirebaseChatCore.instance.sendMessage(
+      message,
+      widget.room.id,
+    );
+  }
+
+  void _setAttachmentUploading(bool uploading) {
+    setState(() {
+      _isAttachmentUploading = uploading;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.teal.shade400,
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          title: const Text('Message'),
+        ),
+        body: StreamBuilder<types.Room>(
+          initialData: widget.room,
+          stream: FirebaseChatCore.instance.room(widget.room.id),
+          builder: (context, snapshot) => StreamBuilder<List<types.Message>>(
+            initialData: const [],
+            stream: FirebaseChatCore.instance.messages(snapshot.data!),
+            builder: (context, snapshot) => Chat(
+              // make dark theme if device is in dark mode and light theme otherwise
+              theme: Theme.of(context).brightness == Brightness.dark
+                  ? DarkChatTheme(
+                      primaryColor: Theme.of(context).primaryColor,
+                    )
+                  : DefaultChatTheme(
+                      primaryColor: Theme.of(context).primaryColor,
+                    ),
+              isAttachmentUploading: _isAttachmentUploading,
+              messages: snapshot.data ?? [],
+              onAttachmentPressed: _handleAttachmentPressed,
+              onMessageTap: _handleMessageTap,
+              onPreviewDataFetched: _handlePreviewDataFetched,
+              onSendPressed: _handleSendPressed,
+              user: types.User(
+                id: FirebaseChatCore.instance.firebaseUser?.uid ?? '',
+              ),
+            ),
+          ),
+        ),
+      );
 }

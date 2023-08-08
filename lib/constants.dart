@@ -1,12 +1,10 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:weather/weather.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:hexcolor/hexcolor.dart';
 
 // secret key
 const apiKey = "1bea58f08eeaa87ecdffcc3a6042945b";
-
-// weather
-WeatherFactory wf = WeatherFactory(apiKey);
 
 // Firebase Messaging
 final messaging = FirebaseMessaging.instance;
@@ -30,12 +28,12 @@ const formPadding = EdgeInsets.symmetric(vertical: 20, horizontal: 16);
 /// Basic theme to change the look and feel of the app
 final appLightTheme = ThemeData.light().copyWith(
   primaryColorDark: Colors.teal,
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     elevation: 1,
     backgroundColor: Colors.white,
-    iconTheme: IconThemeData(color: Colors.black),
+    iconTheme: IconThemeData(color: HexColor('#181830')),
     titleTextStyle: TextStyle(
-      color: Colors.black,
+      color: HexColor('#181830'),
       fontSize: 18,
     ),
   ),
@@ -75,11 +73,11 @@ final appLightTheme = ThemeData.light().copyWith(
 
 final appDarkTheme = ThemeData.dark().copyWith(
   primaryColorDark: Colors.teal,
-  appBarTheme: const AppBarTheme(
+  appBarTheme: AppBarTheme(
     elevation: 1,
-    backgroundColor: Colors.black,
-    iconTheme: IconThemeData(color: Colors.white),
-    titleTextStyle: TextStyle(
+    backgroundColor: HexColor('#181830'),
+    iconTheme: const IconThemeData(color: Colors.white),
+    titleTextStyle: const TextStyle(
       color: Colors.white,
       fontSize: 18,
     ),
@@ -136,3 +134,24 @@ extension ShowSnackBar on BuildContext {
     showSnackBar(message: message, backgroundColor: Colors.red);
   }
 }
+
+const colors = [
+  Color(0xffff6767),
+  Color(0xff66e0da),
+  Color(0xfff5a2d9),
+  Color(0xfff0c722),
+  Color(0xff6a85e5),
+  Color(0xfffd9a6f),
+  Color(0xff92db6e),
+  Color(0xff73b8e5),
+  Color(0xfffd7590),
+  Color(0xffc78ae5),
+];
+
+Color getUserAvatarNameColor(types.User user) {
+  final index = user.id.hashCode % colors.length;
+  return colors[index];
+}
+
+String getUserName(types.User user) =>
+    '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim();

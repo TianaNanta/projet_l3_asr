@@ -1,6 +1,3 @@
-//import 'package:firebase_core/firebase_core.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
-//import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/constants.dart';
@@ -42,9 +39,9 @@ class MyApp extends StatelessWidget {
           theme: appLightTheme,
           darkTheme: appDarkTheme,
           themeMode: settingsController.themeMode,
-          initialRoute: '/',
+          initialRoute: '/home',
           routes: <String, WidgetBuilder>{
-            '/': (_) => const LoginPage(),
+            '/login': (_) => const LoginPage(),
             '/settings': (_) => SettingsView(controller: settingsController),
             '/home': (_) => const HomePage(),
             '/member_details': (_) => const MemberItemDetailsView(),

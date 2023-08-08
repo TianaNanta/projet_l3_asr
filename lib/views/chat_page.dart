@@ -1,11 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:project/controllers/account_controller.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
+import 'package:project/constants.dart';
+import 'package:project/views/account/login_page.dart';
+import 'package:project/views/account/users_page.dart';
 import 'package:project/views/chat/chat_room.dart';
-import 'package:project/views/chat/styles.dart';
-import 'package:project/views/chat/widgets.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({Key? key}) : super(key: key);
@@ -15,223 +16,176 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  bool _error = false;
+  bool _initialized = false;
+  User? _user;
+
   @override
   void initState() {
-    Functions.updateAvailability();
+    initializeFlutterFire();
     super.initState();
   }
 
-  final firestore = FirebaseFirestore.instance;
-  bool open = false;
+  void initializeFlutterFire() async {
+    try {
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        setState(() {
+          _user = user;
+        });
+      });
+      setState(() {
+        _initialized = true;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
+  Widget _buildAvatar(types.Room room) {
+    var color = Colors.transparent;
+
+    if (room.type == types.RoomType.direct) {
+      try {
+        final otherUser = room.users.firstWhere(
+          (u) => u.id != _user!.uid,
+        );
+
+        color = getUserAvatarNameColor(otherUser);
+      } catch (e) {
+        // Do nothing if other user is not found.
+      }
+    }
+
+    final hasImage = room.imageUrl != null;
+    final name = room.name ?? '';
+
+    return Container(
+      margin: const EdgeInsets.only(right: 16),
+      child: CircleAvatar(
+        backgroundColor: hasImage ? Colors.transparent : color,
+        backgroundImage: hasImage ? NetworkImage(room.imageUrl!) : null,
+        radius: 20,
+        child: !hasImage
+            ? Text(
+                name.isEmpty ? '' : name[0].toUpperCase(),
+                style: const TextStyle(color: Colors.white),
+              )
+            : null,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (_error) {
+      return Container();
+    }
+
+    if (!_initialized) {
+      return Container();
+    }
+
     return Scaffold(
-      backgroundColor: Colors.teal.shade400,
       appBar: AppBar(
         backgroundColor: Colors.teal.shade400,
-        title: const Text('Messages'),
-        elevation: 0,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: IconButton(
-                onPressed: () {
-                  setState(() {
-                    open == true ? open = false : open = true;
-                  });
-                },
-                icon: Icon(
-                  open == true ? Icons.close_rounded : Icons.search_rounded,
-                  size: 30,
-                )),
-          )
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _user == null
+                ? null
+                : () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        fullscreenDialog: true,
+                        builder: (context) => const UsersPage(),
+                      ),
+                    );
+                  },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: _user == null
+                ? null
+                : () {
+                    FirebaseAuth.instance.signOut();
+                  },
+          ),
         ],
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        title: const Text('Messages'),
       ),
-      body: SafeArea(
-        child: Stack(
-          alignment: AlignmentDirectional.topEnd,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  margin: const EdgeInsets.all(0),
-                  child: Container(
-                    color: Colors.teal.shade400,
-                    padding: const EdgeInsets.all(8),
-                    height: 160,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Spacer(),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 10),
-                          child: Text(
-                            'Utilisateurs récents',
-                            style: Styles.h1(),
-                          ),
+      body: _user == null
+          ? Container(
+              alignment: Alignment.center,
+              margin: const EdgeInsets.only(
+                bottom: 200,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('Non connecté'),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          fullscreenDialog: true,
+                          builder: (context) => const LoginPage(),
                         ),
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 10),
-                          height: 80,
-                          child: StreamBuilder(
-                              stream: firestore.collection('Rooms').snapshots(),
-                              builder: (context,
-                                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                                List data = !snapshot.hasData
-                                    ? []
-                                    : snapshot.data!.docs
-                                        .where((element) => element['users']
-                                            .toString()
-                                            .contains(FirebaseAuth
-                                                .instance.currentUser!.uid))
-                                        .toList();
-                                return ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: data.length,
-                                  itemBuilder: (context, i) {
-                                    List users = data[i]['users'];
-                                    var friend = users.where((element) =>
-                                        element !=
-                                        FirebaseAuth.instance.currentUser!.uid);
-                                    var user = friend.isNotEmpty
-                                        ? friend.first
-                                        : users
-                                            .where((element) =>
-                                                element ==
-                                                FirebaseAuth
-                                                    .instance.currentUser!.uid)
-                                            .first;
-                                    return FutureBuilder(
-                                        future: firestore
-                                            .collection('Users')
-                                            .doc(user)
-                                            .get(),
-                                        builder: (context, AsyncSnapshot snap) {
-                                          return !snap.hasData
-                                              ? Container()
-                                              : ChatWidgets.circleProfile(
-                                                  onTap: () {
-                                                    Navigator.of(context).push(
-                                                      MaterialPageRoute(
-                                                        builder: (context) {
-                                                          return ChatRoom(
-                                                            id: user,
-                                                            name: snap
-                                                                .data['name'],
-                                                          );
-                                                        },
-                                                      ),
-                                                    );
-                                                  },
-                                                  name: snap.data['name']);
-                                        });
-                                  },
-                                );
-                              }),
-                        ),
-                      ],
-                    ),
+                      );
+                    },
+                    child: const Text('Se Connecter'),
                   ),
-                ),
-                Expanded(
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 10),
-                    decoration: Styles.friendsBox(),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 20, vertical: 20),
-                          child: Text(
-                            'Contacts',
-                            style: Styles.h1().copyWith(color: Colors.teal),
-                          ),
-                        ),
-                        Expanded(
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            child: StreamBuilder(
-                                stream:
-                                    firestore.collection('Rooms').snapshots(),
-                                builder: (context,
-                                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                                  List data = !snapshot.hasData
-                                      ? []
-                                      : snapshot.data!.docs
-                                          .where((element) => element['users']
-                                              .toString()
-                                              .contains(FirebaseAuth
-                                                  .instance.currentUser!.uid))
-                                          .toList();
-                                  return ListView.builder(
-                                    itemCount: data.length,
-                                    itemBuilder: (context, i) {
-                                      List users = data[i]['users'];
-                                      var friend = users.where((element) =>
-                                          element !=
-                                          FirebaseAuth
-                                              .instance.currentUser!.uid);
-                                      var user = friend.isNotEmpty
-                                          ? friend.first
-                                          : users
-                                              .where((element) =>
-                                                  element ==
-                                                  FirebaseAuth.instance
-                                                      .currentUser!.uid)
-                                              .first;
-                                      return FutureBuilder(
-                                          future: firestore
-                                              .collection('Users')
-                                              .doc(user)
-                                              .get(),
-                                          builder:
-                                              (context, AsyncSnapshot snap) {
-                                            return !snap.hasData
-                                                ? Container()
-                                                : ChatWidgets.card(
-                                                    title: snap.data['name'],
-                                                    subtitle: data[i]
-                                                        ['last_message'],
-                                                    time: DateFormat('hh:mm a')
-                                                        .format(data[i][
-                                                                'last_message_time']
-                                                            .toDate()),
-                                                    onTap: () {
-                                                      Navigator.of(context)
-                                                          .push(
-                                                        MaterialPageRoute(
-                                                          builder: (context) {
-                                                            return ChatRoom(
-                                                              id: user,
-                                                              name: snap
-                                                                  .data['name'],
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                          });
-                                    },
-                                  );
-                                }),
-                          ),
-                        ),
-                      ],
+                ],
+              ),
+            )
+          : StreamBuilder<List<types.Room>>(
+              stream: FirebaseChatCore.instance.rooms(),
+              initialData: const [],
+              builder: (context, snapshot) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Container(
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(
+                      bottom: 200,
                     ),
-                  ),
-                ),
-              ],
+                    child: const Text('Aucun message'),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final room = snapshot.data![index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => ChatRoom(
+                              room: room,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            _buildAvatar(room),
+                            Text(room.name ?? ''),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
             ),
-            ChatWidgets.searchBar(open)
-          ],
-        ),
-      ),
     );
   }
 }
